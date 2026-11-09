@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- Ensure mobile devices scale the page properly -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RideGuard - Motorcycle Safety Web App</title>
+
+  <style>
+    /* =========================================================
+       1. GLOBAL STYLES & ROAD-SIGN COLOR THEME
+       ========================================================= */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      /* Light road-grey background */
+      background-color: #eceff1;
+      /* Dark navy highway sign text color */
+      color: #0b1e36;
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+      min-height: 100vh;
+    }
+
+    /* Main mobile container (centers on desktop, fits mobile screens) */
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* =========================================================
+       2. HEADER SECTION
+       ========================================================= */
+    header {
+      text-align: center;
+      padding: 12px 0 4px 0;
+    }
+
+    .app-title {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #0b1e36;
+    }
+
+    .app-subtitle {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #273b53;
+      margin-top: 4px;
+    }
+
+    /* =========================================================
+       3. ROAD-SIGN CARD DESIGN
+       ========================================================= */
+    .card {
+      background-color: #ffffff;
+      /* Deep navy bold border for the road-sign feel */
+      border: 3px solid #0b1e36;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 0 #0b1e36;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 14px;
+      border-bottom: 2px solid #0b1e36;
+      padding-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* =========================================================
+       4. FORM INPUTS & LABELS
+       ========================================================= */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .input-group label {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #0b1e36;
+      text-transform: uppercase;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 1rem;
+      border: 2px solid #0b1e36;
+      border-radius: 8px;
+      background-color: #f8fafc;
+      color: #0b1e36;
+      font-weight: 600;
+      outline: none;
+    }
+
+    .input-field:focus {
+      background-color: #ffffff;
+      border-color: #d97706; /* Amber highlight on focus */
+    }
+
+    /* Checkbox row layout */
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 12px 0 16px 0;
+      user-select: none;
+    }
+
+    .checkbox-input {
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      accent-color: #d97706; /* Amber accent */
+    }
+
+    .checkbox-label {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #0b1e36;
+      cursor: pointer;
+    }
+
+    /* Small confirmation text for saved settings */
+    .feedback-message {
+      font-size: 0.85rem;
+      font-weight: 700;
+      min-height: 18px;
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    /* =========================================================
+       5. LARGE THUMB-FRIENDLY BUTTONS
+       ========================================================= */
+    .btn {
+      width: 100%;
+      min-height: 52px; /* Easy to tap on mobile while riding */
+      padding: 12px 18px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: 3px solid #0b1e36;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.15s, transform 0.1s;
+      box-shadow: 0 4px 0 #0b1e36;
+    }
+
+    .btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #0b1e36;
+    }
+
+    /* Amber primary button (Road warning yellow/amber) */
+    .btn-amber {
+      background-color: #f59e0b;
+      color: #0b1e36;
+    }
+
+    .btn-amber:hover {
+      background-color: #fbbf24;
+    }
+
+    /* Secondary outline button (for test message) */
+    .btn-secondary {
+      background-color: #ffffff;
+      color: #0b1e36;
+      margin-top: 10px;
+    }
+
+    .btn-secondary:hover {
+      background-color: #f1f5f9;
+    }
+
+    /* Green arrival button when ride is active */
+    .btn-green {
+      background-color: #22c55e;
+      color: #0b1e36;
+    }
+
+    .btn-green:hover {
+      background-color: #16a34a;
+    }
+
+    /* Force meter container and visual bar */
+    .force-meter-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .force-meter-track {
+      width: 70px;
+      height: 12px;
+      background-color: #cbd5e1;
+      border: 1.5px solid #0b1e36;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .force-meter-fill {
+      width: 0%;
+      height: 100%;
+      background-color: #d97706; /* Amber meter fill */
+      transition: width 0.08s ease-out;
+    }
+
+    /* Alert button for crash simulation */
+    .btn-alert {
+      background-color: #fee2e2;
+      color: #991b1b;
+      border-color: #991b1b;
+      box-shadow: 0 4px 0 #991b1b;
+      margin-top: 10px;
+    }
+
+    .btn-alert:active {
+      box-shadow: 0 2px 0 #991b1b;
+    }
+
+    /* =========================================================
+       6. RIDE STATUS BANNER & DATA ROWS
+       ========================================================= */
+    /* Big prominent status banner */
+    .status-banner {
+      background-color: #e2e8f0;
+      border: 3px solid #0b1e36;
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .status-label {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #475569;
+    }
+
+    .status-value {
+      font-size: 2rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #0b1e36;
+      margin-top: 4px;
+    }
+
+    /* Sensor & Trip Telemetry Grid */
+    .telemetry-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .telemetry-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      background-color: #f8fafc;
+      border: 2px solid #0b1e36;
+      border-radius: 8px;
+    }
+
+    .telemetry-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #0b1e36;
+      text-transform: uppercase;
+    }
+
+    .telemetry-val {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #0b1e36;
+      background-color: #e2e8f0;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      font-family: monospace;
+    }
+
+    /* Message line / Live log box */
+    .message-line {
+      margin-top: 14px;
+      padding: 10px 12px;
+      background-color: #0b1e36;
+      color: #f8fafc;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: monospace;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      word-break: break-all;
+    }
+
+    /* =========================================================
+       7. EMERGENCY CRASH OVERLAY
+       ========================================================= */
+    .alarm-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #b91c1c; /* Urgent road hazard red */
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px 20px;
+      animation: pulse-hazard 1.2s infinite ease-in-out;
+    }
+
+    @keyframes pulse-hazard {
+      0%, 100% { background-color: #b91c1c; }
+      50% { background-color: #991b1b; }
+    }
+
+    .alarm-content {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+    }
+
+    .alarm-badge {
+      background-color: #fef08a; /* Caution road yellow */
+      color: #0b1e36;
+      font-size: 1.15rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      padding: 6px 18px;
+      border: 3px solid #0b1e36;
+      border-radius: 8px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 0 #0b1e36;
+    }
+
+    .alarm-reason {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fee2e2;
+      line-height: 1.4;
+      max-width: 90%;
+    }
+
+    .alarm-notice {
+      font-size: 1.2rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #ffffff;
+      margin-top: 6px;
+    }
+
+    .alarm-countdown {
+      font-size: 6rem;
+      font-weight: 900;
+      line-height: 1;
+      color: #ffffff;
+      text-shadow: 0 5px 0 #7f1d1d;
+      margin: 6px 0;
+      font-family: monospace;
+    }
+
+    /* Huge green "I'm OK" button */
+    .btn-im-ok {
+      background-color: #22c55e;
+      color: #0b1e36;
+      font-size: 1.8rem;
+      font-weight: 900;
+      min-height: 76px;
+      width: 100%;
+      border: 4px solid #0b1e36;
+      border-radius: 14px;
+      box-shadow: 0 6px 0 #0b1e36;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 8px;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+
+    .btn-im-ok:active {
+      transform: translateY(3px);
+      box-shadow: 0 3px 0 #0b1e36;
+    }
+
+    /* =========================================================
+       8. ALERT PREVIEW BOX (TELEGRAM FALLBACK & TEST)
+       ========================================================= */
+    .alert-preview-box {
+      margin-top: 14px;
+      background-color: #fef9c3; /* Cautionary yellow-cream */
+      border: 3px solid #0b1e36;
+      border-radius: 10px;
+      padding: 12px 14px;
+      box-shadow: 0 4px 0 #0b1e36;
+      text-align: left;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .alert-preview-header {
+      font-size: 0.92rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #0b1e36;
+      border-bottom: 2px solid #0b1e36;
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+    }
+
+    .alert-preview-content {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #0b1e36;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.5;
+    }
+
+    /* One-line testing hint under action buttons */
+    .test-hint {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #334155;
+      text-align: center;
+      margin: 10px 0 2px 0;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Main container -->
+  <main class="app-container">
+
+    <!-- 1. Header: App title & subtitle -->
+    <header>
+      <h1 class="app-title">RideGuard</h1>
+      <p class="app-subtitle">Crash detection and safe arrival check-in</p>
+    </header>
+
+    <!-- 2. Setup Card: Rider credentials & Telegram configuration -->
+    <section class="card" aria-labelledby="setup-title">
+      <h2 id="setup-title" class="card-title">1. Setup</h2>
+
+      <!-- Name Input -->
+      <div class="input-group">
+        <label for="rider-name">Your Name</label>
+        <input 
+          type="text" 
+          id="rider-name" 
+          class="input-field" 
+          placeholder="e.g. Alex" 
+          autocomplete="name">
+      </div>
+
+      <!-- Telegram Bot Token Input (password type keeps it secret) -->
+      <div class="input-group">
+        <label for="telegram-token">Telegram Bot Token</label>
+        <input 
+          type="password" 
+          id="telegram-token" 
+          class="input-field" 
+          placeholder="Enter bot token" 
+          autocomplete="off">
+      </div>
+
+      <!-- Telegram Chat ID Input -->
+      <div class="input-group">
+        <label for="telegram-chat-id">Telegram Chat ID</label>
+        <input 
+          type="text" 
+          id="telegram-chat-id" 
+          class="input-field" 
+          placeholder="e.g. 123456789" 
+          autocomplete="off">
+      </div>
+
+      <!-- Save Settings Button -->
+      <button type="button" id="btn-save-settings" class="btn btn-amber">
+        Save Settings
+      </button>
+
+      <!-- Send Test Message Button -->
+      <button type="button" id="btn-send-test" class="btn btn-secondary">
+        Send Test Message
+      </button>
+
+      <!-- Feedback message shown after clicking save or test -->
+      <div id="save-feedback" class="feedback-message" aria-live="polite"></div>
+
+      <!-- Alert Preview Box (Telegram not set up) -->
+      <div id="setup-preview-box" class="alert-preview-box" style="display: none;">
+        <div class="alert-preview-header">Alert preview (Telegram not set up)</div>
+        <pre id="setup-preview-text" class="alert-preview-content"></pre>
+      </div>
+    </section>
+
+    <!-- 3. Your Trip Card: Destination & Expected Duration -->
+    <section class="card" aria-labelledby="trip-title">
+      <h2 id="trip-title" class="card-title">2. Your Trip</h2>
+
+      <!-- Destination Input -->
+      <div class="input-group">
+        <label for="trip-destination">Destination</label>
+        <input 
+          type="text" 
+          id="trip-destination" 
+          class="input-field" 
+          placeholder="e.g. Campus / City Center">
+      </div>
+
+      <!-- Trip Time in Minutes -->
+      <div class="input-group">
+        <label for="trip-time">Expected Trip Time (Minutes)</label>
+        <input 
+          type="number" 
+          id="trip-time" 
+          class="input-field" 
+          value="30" 
+          min="1" 
+          max="720">
+      </div>
+
+      <!-- Demo Mode Checkbox (Ticked by default) -->
+      <div class="checkbox-group">
+        <input 
+          type="checkbox" 
+          id="demo-mode" 
+          class="checkbox-input" 
+          checked>
+        <label for="demo-mode" class="checkbox-label">Demo mode</label>
+      </div>
+    </section>
+
+    <!-- 4. Ride Card: Real-time telemetry, status & controls -->
+    <section class="card" aria-labelledby="ride-title">
+      <h2 id="ride-title" class="card-title">3. Ride</h2>
+
+      <!-- Big Status Banner -->
+      <div class="status-banner">
+        <div class="status-label">Ride Status</div>
+        <div id="status-display" class="status-value">Idle</div>
+      </div>
+
+      <!-- Sensor and Telemetry Rows -->
+      <div class="telemetry-list">
+        <div class="telemetry-row">
+          <span class="telemetry-name">Motion Sensor</span>
+          <span id="val-motion" class="telemetry-val">STANDBY</span>
+        </div>
+        <div class="telemetry-row">
+          <span class="telemetry-name">GPS</span>
+          <span id="val-gps" class="telemetry-val">OFF</span>
+        </div>
+        <div class="telemetry-row">
+          <span class="telemetry-name">Force</span>
+          <div class="force-meter-container">
+            <div class="force-meter-track" title="Force level meter">
+              <div id="force-bar" class="force-meter-fill"></div>
+            </div>
+            <span id="val-force" class="telemetry-val">0.0 G</span>
+          </div>
+        </div>
+        <div class="telemetry-row">
+          <span class="telemetry-name">Time Without Moving</span>
+          <span id="val-still-time" class="telemetry-val">0s</span>
+        </div>
+        <div class="telemetry-row">
+          <span class="telemetry-name">Trip Time Left</span>
+          <span id="val-time-left" class="telemetry-val">--:--</span>
+        </div>
+      </div>
+
+      <!-- Start Ride Button -->
+      <button type="button" id="btn-start-ride" class="btn btn-amber">
+        Start Ride
+      </button>
+
+      <!-- Simulate Crash Button -->
+      <button type="button" id="btn-simulate-crash" class="btn btn-alert">
+        Simulate Crash
+      </button>
+
+      <!-- One-line testing hint -->
+      <p class="test-hint">💡 How to test: Tap "Simulate crash" or check "Demo mode" and "Start ride" to test without riding.</p>
+
+      <!-- Message Line / Notification status output -->
+      <div id="message-line" class="message-line">
+        Ready to ride. Click "Start Ride" when prepared.
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Full-Screen Emergency Crash Alarm Overlay -->
+  <div id="alarm-overlay" class="alarm-overlay" style="display: none;" role="alertdialog" aria-modal="true">
+    <div class="alarm-content">
+      <div id="alarm-badge" class="alarm-badge">Crash Detected</div>
+      <p id="alarm-reason" class="alarm-reason">High impact detected followed by no movement</p>
+      <p id="alarm-notice" class="alarm-notice">Your emergency contact is alerted in</p>
+      <div id="alarm-countdown" class="alarm-countdown">15</div>
+
+      <!-- Alert Preview Box (Visible if Telegram credentials are not set up) -->
+      <div id="overlay-preview-box" class="alert-preview-box" style="display: none;">
+        <div class="alert-preview-header">Alert preview (Telegram not set up)</div>
+        <pre id="overlay-preview-text" class="alert-preview-content"></pre>
+      </div>
+
+      <button type="button" id="btn-im-ok" class="btn-im-ok">
+        I'M OK
+      </button>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       JAVASCRIPT: LOCAL STORAGE & SETUP HANDLING
+       ========================================================= -->
+  <script>
+    // Constants used as keys for localStorage to avoid typos
+    const STORAGE_KEY_NAME = 'rideguard_rider_name';
+    const STORAGE_KEY_TOKEN = 'rideguard_telegram_token';
+    const STORAGE_KEY_CHAT_ID = 'rideguard_telegram_chat_id';
+
+    // Grab references to the HTML input elements
+    const riderNameInput = document.getElementById('rider-name');
+    const telegramTokenInput = document.getElementById('telegram-token');
+    const telegramChatIdInput = document.getElementById('telegram-chat-id');
+    const tripDestinationInput = document.getElementById('trip-destination');
+    const tripTimeInput = document.getElementById('trip-time');
+    const btnSaveSettings = document.getElementById('btn-save-settings');
+    const btnSendTest = document.getElementById('btn-send-test');
+    const saveFeedback = document.getElementById('save-feedback');
+    const demoModeCheckbox = document.getElementById('demo-mode');
+
+    // References to Alert Preview boxes (shown when Telegram credentials are empty)
+    const setupPreviewBox = document.getElementById('setup-preview-box');
+    const setupPreviewText = document.getElementById('setup-preview-text');
+    const overlayPreviewBox = document.getElementById('overlay-preview-box');
+    const overlayPreviewText = document.getElementById('overlay-preview-text');
+
+    // References to Ride control elements & telemetry readouts
+    const statusDisplay = document.getElementById('status-display');
+    const valMotion = document.getElementById('val-motion');
+    const valGps = document.getElementById('val-gps');
+    const valForce = document.getElementById('val-force');
+    const valStillTime = document.getElementById('val-still-time');
+    const valTimeLeft = document.getElementById('val-time-left');
+    const forceBar = document.getElementById('force-bar');
+    const btnStartRide = document.getElementById('btn-start-ride');
+    const btnSimulateCrash = document.getElementById('btn-simulate-crash');
+    const messageLine = document.getElementById('message-line');
+
+    // Emergency alarm overlay elements
+    const alarmOverlay = document.getElementById('alarm-overlay');
+    const alarmBadge = document.getElementById('alarm-badge');
+    const alarmNotice = document.getElementById('alarm-notice');
+    const alarmReason = document.getElementById('alarm-reason');
+    const alarmCountdown = document.getElementById('alarm-countdown');
+    const btnImOk = document.getElementById('btn-im-ok');
+
+    // State tracking variables
+    let isRiding = false;             // Tracks whether the ride is currently active
+    let motionReceived = false;       // Flags if we received actual motion readings
+    let motionTimeoutId = null;       // 3-second watchdog timer for motion sensor
+    let gpsWatchId = null;            // Watcher ID returned by navigator.geolocation
+    let lastKnownLat = null;          // Last observed GPS latitude
+    let lastKnownLng = null;          // Last observed GPS longitude
+    let wakeLock = null;              // Screen Wake Lock handle to keep screen on
+
+    // Safe Arrival & GPS anchor tracking variables
+    let expectedArrivalTimestamp = 0; // Target arrival timestamp (ms)
+    let lastRiderMovedTimestamp = 0;  // Timestamp of last GPS movement > 30m (ms)
+    let anchorLat = null;             // Last GPS anchor point latitude
+    let anchorLng = null;             // Last GPS anchor point longitude
+    let tripTickerIntervalId = null;  // 1-second interval ticker for safe arrival
+    let noMovementAlertSent = false;  // Prevents sending duplicate "stopped moving" alert
+    let overdueAlertSent = false;     // Prevents sending duplicate "not arrived on time" alert
+    let arrivalAlertSent = false;     // Prevents sending duplicate safe arrival messages
+    let crashAlertSent = false;       // Prevents sending duplicate crash alerts
+
+    // Crash detection & alarm state
+    let crashState = 'NORMAL';        // 'NORMAL', 'CHECKING', or 'ALARM'
+    let checkingStartTime = 0;        // Timestamp when "Checking" was entered
+    let consecutiveStillMs = 0;       // Consecutive milliseconds without moving (needs 5000ms = 5s)
+    let checkingIntervalId = null;    // 100ms ticker to measure stillness during "Checking"
+    let latestTotalAcc = 9.81;        // Latest acceleration magnitude in m/s²
+    let currentGpsSpeed = 0;          // Current GPS speed in m/s (from watchPosition)
+    let peakImpactAcc = 0;            // Peak acceleration during crash trigger
+
+    // Alarm countdown & audio state
+    let audioCtx = null;              // Web Audio context for loud alarm beeps
+    let alarmCountdownTimer = null;   // 1-second countdown interval
+    let alarmBeepIntervalId = null;   // 600ms beep & vibration interval
+    let alarmCountdownSeconds = 15;   // 15-second countdown timer
+
+    /**
+     * Function: getAudioContext
+     * Purpose: Creates or resumes the Web Audio context inside a user gesture (button tap).
+     */
+    function getAudioContext() {
+      try {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            audioCtx = new AudioContextClass();
+          }
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      } catch (err) {
+        console.warn('AudioContext initialization error:', err);
+      }
+      return audioCtx;
+    }
+
+    /**
+     * Function: playAlarmBeep
+     * Purpose: Emits a loud, piercing beep using a Web Audio square-wave oscillator.
+     */
+    function playAlarmBeep() {
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        // Square wave produces a piercing, intense alarm sound
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(950, ctx.currentTime);
+
+        // Loud volume envelope: fast attack, quick release
+        gain.gain.setValueAtTime(0.85, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 0.25);
+      } catch (err) {
+        console.warn('Audio beep error:', err);
+      }
+    }
+
+    /**
+     * Function: triggerVibration
+     * Purpose: Activates device vibration motor if supported on mobile devices.
+     */
+    function triggerVibration() {
+      if ('vibrate' in navigator) {
+        try {
+          navigator.vibrate(250);
+        } catch (e) {
+          // Ignore vibration errors
+        }
+      }
+    }
+
+    /**
+     * Function: loadSettingsFromStorage
+     * Purpose: Reads saved settings from localStorage and fills the inputs.
+     * Note: Wrapped in try/catch to gracefully handle disabled cookies or private browsing errors.
+     */
+    function loadSettingsFromStorage() {
+      try {
+        if (typeof window !== 'undefined' && 'localStorage' in window) {
+          const savedName = localStorage.getItem(STORAGE_KEY_NAME);
+          const savedToken = localStorage.getItem(STORAGE_KEY_TOKEN);
+          const savedChatId = localStorage.getItem(STORAGE_KEY_CHAT_ID);
+
+          // Populate fields only if values exist
+          if (savedName !== null && riderNameInput) {
+            riderNameInput.value = savedName;
+          }
+          if (savedToken !== null && telegramTokenInput) {
+            telegramTokenInput.value = savedToken;
+          }
+          if (savedChatId !== null && telegramChatIdInput) {
+            telegramChatIdInput.value = savedChatId;
+          }
+        }
+      } catch (error) {
+        console.warn('Could not load settings from localStorage:', error);
+      }
+    }
+
+    /**
+     * Function: saveSettingsToStorage
+     * Purpose: Saves user credentials to localStorage so secrets are never in the source code.
+     */
+    function saveSettingsToStorage() {
+      try {
+        const nameVal = riderNameInput ? riderNameInput.value.trim() : '';
+        const tokenVal = telegramTokenInput ? telegramTokenInput.value.trim() : '';
+        const chatIdVal = telegramChatIdInput ? telegramChatIdInput.value.trim() : '';
+
+        // Save each value into the browser's localStorage
+        if (typeof window !== 'undefined' && 'localStorage' in window) {
+          localStorage.setItem(STORAGE_KEY_NAME, nameVal);
+          localStorage.setItem(STORAGE_KEY_TOKEN, tokenVal);
+          localStorage.setItem(STORAGE_KEY_CHAT_ID, chatIdVal);
+        }
+
+        // Display brief confirmation message to the user
+        if (saveFeedback) {
+          saveFeedback.style.color = '#15803d'; // Green text
+          saveFeedback.textContent = 'Settings saved successfully!';
+
+          // Clear feedback message after 3 seconds
+          setTimeout(() => {
+            if (saveFeedback) saveFeedback.textContent = '';
+          }, 3000);
+        }
+      } catch (error) {
+        console.warn('Failed to save settings:', error);
+        if (saveFeedback) {
+          saveFeedback.style.color = '#b91c1c'; // Red error text
+          saveFeedback.textContent = 'Error saving settings (storage might be blocked).';
+        }
+      }
+    }
+
+    /**
+     * Function: enterCheckingState
+     * Purpose: Begins the "Checking" phase after a high force impact.
+     *          - Checks if the phone stays still for 5s in a row (force within 2.5 m/s² of 9.81, GPS <= 5 m/s).
+     *          - Any movement restarts the 5-second stillness timer.
+     *          - If it keeps moving for 30 seconds, cancels as a false alarm.
+     */
+    function enterCheckingState(reason) {
+      crashState = 'CHECKING';
+      checkingStartTime = Date.now();
+      consecutiveStillMs = 0;
+      statusDisplay.textContent = 'Checking';
+      messageLine.textContent = reason + ' - Checking for rider movement...';
+
+      if (checkingIntervalId) {
+        clearInterval(checkingIntervalId);
+      }
+
+      // Check stillness every 100ms
+      checkingIntervalId = setInterval(() => {
+        // "Still" condition:
+        // 1. Force is within 2.5 m/s² of 9.81 m/s² (Earth gravity)
+        // 2. GPS speed is NOT above 5 m/s (speed > 5 m/s counts as still moving)
+        const forceDiffFromGravity = Math.abs(latestTotalAcc - 9.81);
+        const isGpsMoving = (currentGpsSpeed !== null && currentGpsSpeed > 5);
+        const isStill = (forceDiffFromGravity <= 2.5) && !isGpsMoving;
+
+        if (isStill) {
+          consecutiveStillMs += 100;
+          valStillTime.textContent = (consecutiveStillMs / 1000).toFixed(1) + 's';
+
+          // If still for 5 seconds in a row, confirm crash!
+          if (consecutiveStillMs >= 5000) {
+            clearInterval(checkingIntervalId);
+            checkingIntervalId = null;
+            triggerCrashAlarm('High impact (' + peakImpactAcc.toFixed(1) + ' m/s²) followed by 5s of stillness');
+            return;
+          }
+        } else {
+          // Any movement restarts the 5-second stillness timer
+          consecutiveStillMs = 0;
+          valStillTime.textContent = '0s';
+        }
+
+        // If it keeps moving for 30 seconds, cancel it as a false alarm
+        const elapsedSinceImpact = Date.now() - checkingStartTime;
+        if (elapsedSinceImpact >= 30000) {
+          clearInterval(checkingIntervalId);
+          checkingIntervalId = null;
+          crashState = 'NORMAL';
+          statusDisplay.textContent = 'Riding';
+          messageLine.textContent = 'False alarm: Movement detected for 30s. Resuming ride.';
+          valStillTime.textContent = '0s';
+        }
+      }, 100);
+    }
+
+    /**
+     * Function: triggerCrashAlarm
+     * Purpose: Shows full-screen red emergency overlay, runs 15s countdown, beeps every 600ms, and vibrates.
+     *          Prevents opening twice and resets previous timer handles.
+     */
+    function triggerCrashAlarm(reason) {
+      // Guard: Make sure the alarm cannot open twice concurrently
+      if (crashState === 'ALARM') {
+        return;
+      }
+      crashState = 'ALARM';
+
+      // Clear any checking ticker and previous alarm timers
+      if (checkingIntervalId) {
+        clearInterval(checkingIntervalId);
+        checkingIntervalId = null;
+      }
+      if (alarmBeepIntervalId) {
+        clearInterval(alarmBeepIntervalId);
+        alarmBeepIntervalId = null;
+      }
+      if (alarmCountdownTimer) {
+        clearInterval(alarmCountdownTimer);
+        alarmCountdownTimer = null;
+      }
+
+      // Reset overlay fields
+      alarmBadge.textContent = 'Crash Detected';
+      alarmNotice.textContent = 'Your emergency contact is alerted in';
+      alarmCountdown.style.fontSize = '';
+      if (overlayPreviewBox) overlayPreviewBox.style.display = 'none';
+
+      alarmReason.textContent = reason;
+      alarmCountdownSeconds = 15;
+      alarmCountdown.textContent = alarmCountdownSeconds;
+      alarmOverlay.style.display = 'flex';
+
+      // Ensure audio context is unlocked
+      getAudioContext();
+
+      // Play initial beep & vibrate immediately
+      playAlarmBeep();
+      triggerVibration();
+
+      // Beep and vibrate every 600 ms
+      alarmBeepIntervalId = setInterval(() => {
+        playAlarmBeep();
+        triggerVibration();
+      }, 600);
+
+      // 1-second interval countdown timer from 15 to 0
+      alarmCountdownTimer = setInterval(() => {
+        alarmCountdownSeconds -= 1;
+        if (alarmCountdownSeconds > 0) {
+          alarmCountdown.textContent = alarmCountdownSeconds;
+        } else {
+          // Countdown reached 0
+          alarmCountdown.textContent = '0';
+          if (alarmCountdownTimer) {
+            clearInterval(alarmCountdownTimer);
+            alarmCountdownTimer = null;
+          }
+          if (alarmBeepIntervalId) {
+            clearInterval(alarmBeepIntervalId);
+            alarmBeepIntervalId = null;
+          }
+          try {
+            if ('vibrate' in navigator && typeof navigator.vibrate === 'function') {
+              navigator.vibrate(0);
+            }
+          } catch (e) {}
+          const currentReason = alarmReason.textContent || 'Crash detected';
+          sendAlert(currentReason, false);
+        }
+      }, 1000);
+    }
+
+    /**
+     * Function: handleImOk
+     * Purpose: "I'm OK" cancels everything and shows "Alarm cancelled. Stay safe."
+     */
+    function handleImOk() {
+      // Cancel countdown, beeps, and vibration
+      if (alarmCountdownTimer) {
+        clearInterval(alarmCountdownTimer);
+        alarmCountdownTimer = null;
+      }
+      if (alarmBeepIntervalId) {
+        clearInterval(alarmBeepIntervalId);
+        alarmBeepIntervalId = null;
+      }
+      if (checkingIntervalId) {
+        clearInterval(checkingIntervalId);
+        checkingIntervalId = null;
+      }
+      try {
+        if ('vibrate' in navigator && typeof navigator.vibrate === 'function') {
+          navigator.vibrate(0);
+        }
+      } catch (e) {}
+
+      // Hide the emergency overlay and reset overlay styles
+      alarmOverlay.style.display = 'none';
+      if (overlayPreviewBox) overlayPreviewBox.style.display = 'none';
+      if (alarmBadge) alarmBadge.textContent = 'Crash Detected';
+      if (alarmNotice) alarmNotice.textContent = 'Your emergency contact is alerted in';
+      if (alarmCountdown) alarmCountdown.style.fontSize = '';
+
+      // Reset crash state and movement timer
+      crashState = 'NORMAL';
+      consecutiveStillMs = 0;
+      valStillTime.textContent = '0s';
+      lastRiderMovedTimestamp = Date.now();
+      noMovementAlertSent = false;
+
+      // Ensure buttons switch back correctly
+      if (isRiding) {
+        statusDisplay.textContent = 'Riding';
+        btnStartRide.textContent = "I've arrived safely";
+        btnStartRide.className = 'btn btn-green';
+      } else {
+        statusDisplay.textContent = 'Idle';
+        btnStartRide.textContent = 'Start Ride';
+        btnStartRide.className = 'btn btn-amber';
+      }
+
+      // Show required cancellation message
+      messageLine.textContent = 'Alarm cancelled. Stay safe.';
+    }
+
+    /**
+     * Function: calculateDistanceMeters
+     * Purpose: Calculates the great-circle distance between two GPS coordinates using the Haversine formula.
+     */
+    function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
+      if (lat1 === null || lon1 === null || lat2 === null || lon2 === null ||
+          isNaN(lat1) || isNaN(lon1) || isNaN(lat2) || isNaN(lon2)) {
+        return 0;
+      }
+      const R = 6371e3; // Earth's mean radius in meters
+      const phi1 = lat1 * Math.PI / 180;
+      const phi2 = lat2 * Math.PI / 180;
+      const deltaPhi = (lat2 - lat1) * Math.PI / 180;
+      const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+
+      const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+                Math.cos(phi1) * Math.cos(phi2) *
+                Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+      return R * c; // Distance in meters
+    }
+
+    /**
+     * Set of sent alert reasons to prevent duplicate alerts
+     */
+    const sentAlertReasons = new Set();
+
+    /**
+     * Function: buildAlertMessage
+     * Purpose: Builds the formatted alert string with rider name, reason, time, destination, and GPS link.
+     */
+    function buildAlertMessage(reason, isTest = false) {
+      const name = (riderNameInput && riderNameInput.value.trim()) || 'Unknown Rider';
+      const destination = (tripDestinationInput && tripDestinationInput.value.trim()) || 'Not specified';
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) +
+                      ' (' + now.toLocaleDateString() + ')';
+
+      let locationStr = 'Location not available';
+      if (lastKnownLat !== null && lastKnownLng !== null) {
+        locationStr = `https://maps.google.com/?q=${lastKnownLat},${lastKnownLng}`;
+      }
+
+      const header = isTest ? '🚨 RIDEGUARD TEST ALERT 🚨' : '🚨 RIDEGUARD ALERT 🚨';
+
+      return `${header}\n` +
+             `Rider: ${name}\n` +
+             `Reason: ${reason}\n` +
+             `Time: ${timeStr}\n` +
+             `Destination: ${destination}\n` +
+             `Location: ${locationStr}`;
+    }
+
+    /**
+     * Function: showPreviewBoxes
+     * Purpose: Populates and reveals the alert preview boxes on screen when Telegram is not configured.
+     */
+    function showPreviewBoxes(messageText) {
+      if (setupPreviewBox && setupPreviewText) {
+        setupPreviewText.textContent = messageText;
+        setupPreviewBox.style.display = 'block';
+      }
+      if (overlayPreviewBox && overlayPreviewText) {
+        overlayPreviewText.textContent = messageText;
+        overlayPreviewBox.style.display = 'block';
+      }
+    }
+
+    /**
+     * Function: dispatchTelegramNotification
+     * Purpose: Shared helper that sends messages to Telegram or displays the fallback preview box.
+     */
+    async function dispatchTelegramNotification(messageText, isArrival = false) {
+      const token = telegramTokenInput ? telegramTokenInput.value.trim() : '';
+      const chatId = telegramChatIdInput ? telegramChatIdInput.value.trim() : '';
+
+      // If credentials are empty: DON'T FAIL, show preview box
+      if (!token || !chatId) {
+        showPreviewBoxes(messageText);
+        messageLine.textContent = isArrival 
+          ? 'Arrival preview generated (Telegram not set up).' 
+          : 'Alert preview generated (Telegram not set up).';
+        if (saveFeedback) {
+          saveFeedback.style.color = '#b45309';
+          saveFeedback.textContent = 'Telegram not configured. See preview below.';
+        }
+        return;
+      }
+
+      // Send via Telegram Bot API fetch GET
+      try {
+        messageLine.textContent = isArrival ? 'Sending safe arrival update...' : 'Sending alert to Telegram...';
+        const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${encodeURIComponent(chatId)}&text=${encodeURIComponent(messageText)}`;
+        
+        const response = await fetch(url, { method: 'GET' });
+        const data = await response.json().catch(() => null);
+
+        if (response.ok && data && data.ok) {
+          messageLine.textContent = isArrival 
+            ? 'Safe arrival confirmed on Telegram!' 
+            : 'Alert successfully sent to Telegram!';
+          if (saveFeedback) {
+            saveFeedback.style.color = '#15803d';
+            saveFeedback.textContent = isArrival 
+              ? 'Safe arrival confirmed on Telegram!' 
+              : 'Alert successfully sent to Telegram!';
+          }
+        } else {
+          // Show Telegram's exact error text
+          const exactError = (data && data.description) 
+            ? data.description 
+            : `HTTP error ${response.status}: ${response.statusText}`;
+          messageLine.textContent = 'Telegram error: ' + exactError;
+          if (saveFeedback) {
+            saveFeedback.style.color = '#b91c1c';
+            saveFeedback.textContent = 'Telegram error: ' + exactError;
+          }
+        }
+      } catch (err) {
+        messageLine.textContent = 'Network error sending notification: ' + err.message;
+        if (saveFeedback) {
+          saveFeedback.style.color = '#b91c1c';
+          saveFeedback.textContent = 'Network error: ' + err.message;
+        }
+      }
+    }
+
+    /**
+     * Function: sendAlert
+     * Purpose: Sends alert to Telegram with fetch GET, or shows alert preview if credentials are missing.
+     *          Prevents sending the same alert multiple times. Updates status banner to "Alert sent".
+     */
+    async function sendAlert(reason = 'Crash detected', isTest = false) {
+      // Rule: After an alert is sent, don't send the same alert again
+      if (!isTest && sentAlertReasons.has(reason)) {
+        return;
+      }
+      if (!isTest) {
+        sentAlertReasons.add(reason);
+      }
+
+      const alertText = buildAlertMessage(reason, isTest);
+
+      // Update the emergency overlay display if it is currently visible
+      if (alarmBadge) alarmBadge.textContent = 'Alert Sent';
+      if (alarmNotice) alarmNotice.textContent = 'Emergency notification dispatched';
+      if (alarmCountdown) {
+        alarmCountdown.textContent = 'SENT';
+        alarmCountdown.style.fontSize = '3.5rem';
+      }
+
+      await dispatchTelegramNotification(alertText, false);
+
+      // Status becomes "Alert sent" afterwards
+      statusDisplay.textContent = 'Alert sent';
+    }
+
+    /**
+     * Function: handleDeviceMotion
+     * Purpose: Reads accelerometer data, computes total force in G, and detects high impact spikes.
+     */
+    function handleDeviceMotion(event) {
+      const acc = event.accelerationIncludingGravity;
+      if (!acc) return;
+
+      // Check if valid numeric readings are delivered
+      if (acc.x !== null || acc.y !== null || acc.z !== null) {
+        // First valid reading: clear the 3-second watchdog timer and mark sensor as Working
+        if (!motionReceived) {
+          motionReceived = true;
+          if (motionTimeoutId) {
+            clearTimeout(motionTimeoutId);
+            motionTimeoutId = null;
+          }
+          valMotion.textContent = 'Working';
+        }
+
+        const x = acc.x || 0;
+        const y = acc.y || 0;
+        const z = acc.z || 0;
+
+        // Total force magnitude = sqrt(x^2 + y^2 + z^2) in m/s^2
+        const totalAcceleration = Math.sqrt(x * x + y * y + z * z);
+        latestTotalAcc = totalAcceleration;
+
+        // Convert m/s^2 to G-force (Earth gravity is ~9.81 m/s^2)
+        const forceG = totalAcceleration / 9.81;
+
+        // Show force with 1 decimal place
+        valForce.textContent = forceG.toFixed(1) + ' G';
+
+        // Scale bar meter: 0 G to 3.5 G covers normal riding movements and bumps
+        const percent = Math.min(Math.max((forceG / 3.5) * 100, 0), 100);
+        forceBar.style.width = percent.toFixed(0) + '%';
+
+        // Crash Rule: If total force goes above 28 m/s² (18 in Demo mode), enter "Checking" state
+        if (isRiding && crashState === 'NORMAL') {
+          const isDemo = demoModeCheckbox.checked;
+          const threshold = isDemo ? 18.0 : 28.0;
+
+          if (totalAcceleration > threshold) {
+            peakImpactAcc = totalAcceleration;
+            enterCheckingState('High impact (' + totalAcceleration.toFixed(1) + ' m/s²)');
+          }
+        }
+      }
+    }
+
+    /**
+     * Function: startGpsTracking
+     * Purpose: Uses watchPosition with high accuracy to monitor location, speed, and 30m anchor displacement.
+     */
+    function startGpsTracking() {
+      try {
+        if (!('geolocation' in navigator) || !navigator.geolocation) {
+          valGps.textContent = 'Blocked';
+          messageLine.textContent = 'Geolocation is not supported by your browser.';
+          return;
+        }
+
+        valGps.textContent = 'Searching...';
+
+        gpsWatchId = navigator.geolocation.watchPosition(
+          (position) => {
+            try {
+              const accuracy = position.coords.accuracy; // Accuracy in meters
+
+              // Ignore GPS readings with accuracy worse than 60 m as required
+              if (accuracy <= 60) {
+                valGps.textContent = 'Locked';
+
+                // Store last known coordinates for alert dispatch
+                lastKnownLat = position.coords.latitude;
+                lastKnownLng = position.coords.longitude;
+
+                // Safe Arrival anchor point calculation:
+                // "The rider 'moved' when GPS shows they are more than 30 m from the last anchor point."
+                if (anchorLat === null || anchorLng === null) {
+                  anchorLat = lastKnownLat;
+                  anchorLng = lastKnownLng;
+                  lastRiderMovedTimestamp = Date.now();
+                } else {
+                  const distanceMeters = calculateDistanceMeters(anchorLat, anchorLng, lastKnownLat, lastKnownLng);
+                  if (distanceMeters > 30) {
+                    // Rider has moved more than 30 meters from anchor
+                    anchorLat = lastKnownLat;
+                    anchorLng = lastKnownLng;
+                    lastRiderMovedTimestamp = Date.now();
+                  }
+                }
+
+                // Track GPS speed in m/s (speed > 5 m/s counts as still moving)
+                if (position.coords.speed !== null && !isNaN(position.coords.speed)) {
+                  currentGpsSpeed = position.coords.speed;
+                } else {
+                  currentGpsSpeed = 0;
+                }
+              } else {
+                valGps.textContent = 'Weak signal';
+                // Ignore inaccurate readings (> 60 m) for movement tracking
+              }
+            } catch (posErr) {
+              console.warn('GPS position handling error:', posErr);
+            }
+          },
+          (error) => {
+            if (error && error.code === error.PERMISSION_DENIED) {
+              valGps.textContent = 'Blocked';
+              messageLine.textContent = 'GPS permission was blocked. Please enable location access in Chrome settings.';
+            } else {
+              valGps.textContent = 'Weak signal';
+              messageLine.textContent = 'GPS signal weak or unavailable. Ensure device location is turned on.';
+            }
+          },
+          {
+            enableHighAccuracy: true, // Request high accuracy GPS
+            timeout: 10000,
+            maximumAge: 0
+          }
+        );
+      } catch (geoErr) {
+        valGps.textContent = 'Blocked';
+        messageLine.textContent = 'GPS error: ' + geoErr.message;
+      }
+    }
+
+    /**
+     * Function: updateTripTicker
+     * Purpose: Runs every second while riding to:
+     *          - Update "Time without moving"
+     *          - Update "Trip time left" (shows "Overdue" when negative)
+     *          - Check for prolonged inactivity (5 min / 15s Demo) or overdue arrival (10 min / 10s Demo)
+     */
+    function updateTripTicker() {
+      if (!isRiding) return;
+
+      const now = Date.now();
+
+      // 1. Update "Time without moving" (only if not actively counting crash stillness)
+      if (crashState !== 'CHECKING') {
+        const stillSec = Math.max(0, Math.floor((now - lastRiderMovedTimestamp) / 1000));
+        if (stillSec < 60) {
+          valStillTime.textContent = stillSec + 's';
+        } else {
+          const mins = Math.floor(stillSec / 60);
+          const secs = stillSec % 60;
+          valStillTime.textContent = `${mins}m ${secs}s`;
+        }
+      }
+
+      // 2. Update "Trip time left" (show "Overdue" when negative)
+      const remainingMs = expectedArrivalTimestamp - now;
+      if (remainingMs > 0) {
+        const totalRemainingSec = Math.ceil(remainingMs / 1000);
+        const mins = Math.floor(totalRemainingSec / 60);
+        const secs = totalRemainingSec % 60;
+        valTimeLeft.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      } else {
+        valTimeLeft.textContent = 'Overdue';
+      }
+
+      // 3. Safe Arrival Alarm Checks (do not interrupt an existing alarm)
+      if (crashState !== 'ALARM') {
+        const isDemo = demoModeCheckbox.checked;
+
+        // Alarm Reason 1: No movement for 5 minutes (15 seconds in Demo mode)
+        const noMoveThresholdMs = isDemo ? 15000 : (5 * 60 * 1000);
+        const stillDurationMs = now - lastRiderMovedTimestamp;
+        if (!noMovementAlertSent && stillDurationMs >= noMoveThresholdMs) {
+          noMovementAlertSent = true;
+          triggerCrashAlarm('Rider has stopped moving for a long time');
+          return;
+        }
+
+        // Alarm Reason 2: Now > 10 minutes after expected arrival (10 seconds in Demo mode)
+        const overdueThresholdMs = isDemo ? 10000 : (10 * 60 * 1000);
+        const overdueDurationMs = now - expectedArrivalTimestamp;
+        if (!overdueAlertSent && overdueDurationMs >= overdueThresholdMs) {
+          overdueAlertSent = true;
+          triggerCrashAlarm('Rider has not arrived on time');
+          return;
+        }
+      }
+    }
+
+    /**
+     * Function: requestWakeLock
+     * Purpose: Keeps mobile screen awake during the ride using the Screen Wake Lock API.
+     */
+    async function requestWakeLock() {
+      try {
+        if ('wakeLock' in navigator && navigator.wakeLock && typeof navigator.wakeLock.request === 'function') {
+          wakeLock = await navigator.wakeLock.request('screen');
+        }
+      } catch (err) {
+        // Silently ignore wake lock errors as requested
+      }
+    }
+
+    /**
+     * Function: releaseWakeLock
+     * Purpose: Releases the screen wake lock when the ride finishes.
+     */
+    function releaseWakeLock() {
+      try {
+        if (wakeLock !== null && typeof wakeLock.release === 'function') {
+          wakeLock.release().catch(() => {});
+        }
+      } catch (err) {
+        // Silently ignore errors
+      } finally {
+        wakeLock = null;
+      }
+    }
+
+    /**
+     * Function: startRide
+     * Purpose: Requests permissions, starts motion listener & GPS watcher, initiates Safe Arrival tracking, and activates Wake Lock.
+     */
+    async function startRide() {
+      // 1. Ask for motion permission (iPhone / iOS requires requestPermission, Android doesn't)
+      if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+        try {
+          const permissionState = await DeviceMotionEvent.requestPermission();
+          if (permissionState !== 'granted') {
+            valMotion.textContent = 'Blocked';
+            messageLine.textContent = 'Motion sensor permission was denied. Please allow motion access in iOS Safari settings.';
+            return;
+          }
+        } catch (err) {
+          valMotion.textContent = 'Blocked';
+          messageLine.textContent = 'Motion sensor permission error: ' + err.message;
+          return;
+        }
+      }
+
+      // 2. Mark ride as active and update UI
+      isRiding = true;
+      crashState = 'NORMAL';
+      statusDisplay.textContent = 'Riding';
+      btnStartRide.textContent = "I've arrived safely";
+      btnStartRide.classList.remove('btn-amber');
+      btnStartRide.classList.add('btn-green');
+      messageLine.textContent = 'Ride active. Sensors monitoring in real-time.';
+
+      // 3. Setup Safe Arrival tracking:
+      // Record expected arrival time (trip minutes; in Demo mode treat 1 minute as 1 second)
+      const tripMinutes = parseFloat(tripTimeInput ? tripTimeInput.value : 30) || 30;
+      const isDemo = demoModeCheckbox.checked;
+      const durationSeconds = isDemo ? tripMinutes : (tripMinutes * 60);
+      expectedArrivalTimestamp = Date.now() + (durationSeconds * 1000);
+      lastRiderMovedTimestamp = Date.now();
+
+      // Reset anchor coordinates and alert flags
+      anchorLat = null;
+      anchorLng = null;
+      noMovementAlertSent = false;
+      overdueAlertSent = false;
+      arrivalAlertSent = false;
+      sentAlertReasons.clear();
+
+      // Start 1-second Safe Arrival ticker
+      if (tripTickerIntervalId) clearInterval(tripTickerIntervalId);
+      tripTickerIntervalId = setInterval(updateTripTicker, 1000);
+      updateTripTicker(); // Run first tick immediately
+
+      // 4. Listen to devicemotion
+      motionReceived = false;
+      valMotion.textContent = 'Detecting...';
+      window.addEventListener('devicemotion', handleDeviceMotion);
+
+      // 3-second watchdog timer: if no readings arrive after 3s, show "No sensor on this device"
+      motionTimeoutId = setTimeout(() => {
+        if (!motionReceived) {
+          valMotion.textContent = 'No sensor on this device';
+          messageLine.textContent = 'No motion sensor readings detected on this device.';
+        }
+      }, 3000);
+
+      // 5. Start high-accuracy GPS tracking
+      startGpsTracking();
+
+      // 6. Keep screen awake with Wake Lock API (ignore errors)
+      await requestWakeLock();
+    }
+
+    /**
+     * Function: stopRideSensorsAndTimers
+     * Purpose: Stops sensor listeners, GPS tracking, and active background timers.
+     */
+    function stopRideSensorsAndTimers() {
+      isRiding = false;
+
+      // Stop Safe Arrival ticker
+      if (tripTickerIntervalId) {
+        clearInterval(tripTickerIntervalId);
+        tripTickerIntervalId = null;
+      }
+
+      // Cancel checking ticker and countdown timers
+      if (checkingIntervalId) {
+        clearInterval(checkingIntervalId);
+        checkingIntervalId = null;
+      }
+      if (alarmCountdownTimer) {
+        clearInterval(alarmCountdownTimer);
+        alarmCountdownTimer = null;
+      }
+      if (alarmBeepIntervalId) {
+        clearInterval(alarmBeepIntervalId);
+        alarmBeepIntervalId = null;
+      }
+      if ('vibrate' in navigator) {
+        try { navigator.vibrate(0); } catch (e) {}
+      }
+      alarmOverlay.style.display = 'none';
+      crashState = 'NORMAL';
+
+      // Remove motion listener and clear timeout
+      window.removeEventListener('devicemotion', handleDeviceMotion);
+      if (motionTimeoutId) {
+        clearTimeout(motionTimeoutId);
+        motionTimeoutId = null;
+      }
+      valMotion.textContent = 'STANDBY';
+      valForce.textContent = '0.0 G';
+      forceBar.style.width = '0%';
+
+      // Stop GPS watcher safely
+      if (gpsWatchId !== null) {
+        try {
+          if (navigator.geolocation && typeof navigator.geolocation.clearWatch === 'function') {
+            navigator.geolocation.clearWatch(gpsWatchId);
+          }
+        } catch (e) {}
+        gpsWatchId = null;
+      }
+      valGps.textContent = 'OFF';
+      currentGpsSpeed = 0;
+
+      // Release Wake Lock
+      releaseWakeLock();
+    }
+
+    /**
+     * Function: handleSafeArrival
+     * Purpose: "I've arrived safely" stops sensors and GPS and sends "<name> reached <destination> safely at <time>"
+     *          through the same Telegram function (or preview box).
+     */
+    async function handleSafeArrival() {
+      // 1. Stop sensors and GPS
+      stopRideSensorsAndTimers();
+
+      // 2. Compose arrival message: "<name> reached <destination> safely at <time>"
+      const name = (riderNameInput && riderNameInput.value.trim()) || 'Rider';
+      const destination = (tripDestinationInput && tripDestinationInput.value.trim()) || 'destination';
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const arrivalMessage = `${name} reached ${destination} safely at ${timeStr}`;
+
+      // 3. Send through Telegram (or preview box) if not sent already
+      if (!arrivalAlertSent) {
+        arrivalAlertSent = true;
+        await dispatchTelegramNotification(arrivalMessage, true);
+      }
+
+      // 4. Update UI to arrived state
+      statusDisplay.textContent = 'Arrived safe';
+      btnStartRide.textContent = 'Start Ride';
+      btnStartRide.classList.remove('btn-green');
+      btnStartRide.classList.add('btn-amber');
+      valTimeLeft.textContent = 'Arrived';
+      valStillTime.textContent = '0s';
+    }
+
+    // Attach click event listener to the "Save Settings" button
+    btnSaveSettings.addEventListener('click', () => {
+      getAudioContext(); // Resume/create audio context inside user button tap
+      saveSettingsToStorage();
+    });
+
+    // Send test alert message from Setup card
+    btnSendTest.addEventListener('click', async () => {
+      getAudioContext(); // Resume/create audio context inside user button tap
+      await sendAlert('Manual test message from Setup card', true);
+    });
+
+    // Toggle ride between Start and Safe Arrival
+    btnStartRide.addEventListener('click', async () => {
+      getAudioContext(); // Resume/create audio context inside user button tap
+      if (!isRiding) {
+        await startRide();
+      } else {
+        await handleSafeArrival();
+      }
+    });
+
+    // Tap "Simulate crash" to immediately trigger the emergency alarm
+    btnSimulateCrash.addEventListener('click', () => {
+      getAudioContext(); // Resume/create audio context inside user button tap
+      triggerCrashAlarm('Crash simulated by rider');
+    });
+
+    // Tap "I'm OK" to cancel the alarm
+    btnImOk.addEventListener('click', () => {
+      getAudioContext(); // Resume/create audio context inside user button tap
+      handleImOk();
+    });
+
+    // Re-acquire wake lock if the rider switches back to Chrome while riding
+    document.addEventListener('visibilitychange', async () => {
+      try {
+        if (isRiding && document.visibilityState === 'visible') {
+          await requestWakeLock();
+        }
+      } catch (e) {
+        // Silently ignore visibility change errors
+      }
+    });
+
+    // Run on page load: automatically restore saved settings
+    window.addEventListener('DOMContentLoaded', loadSettingsFromStorage);
+  </script>
+
+</body>
+</html>
